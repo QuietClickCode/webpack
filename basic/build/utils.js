@@ -4,16 +4,17 @@
 'use strict';
 
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const config = require('../config');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 exports.assetsPath = function (newPath) {
-    // static
+    // assetsSubDirectory =  static
     let assetsSubDirectory = process.env.NODE_ENV === 'production'
         ? config.build.assetsSubDirectory
         : config.dev.assetsSubDirectory;
 
-    // 拼接路径
+    // 拼接路径 static + newPath
     return path.posix.join(assetsSubDirectory, newPath)
 }
 
@@ -65,4 +66,22 @@ exports.cssLoaders = function (options) {
         stylus: generateLoaders('stylus'),
         styl: generateLoaders('stylus')
     }
+}
+
+// 为独立样式文件生成加载器（.vue之外）
+exports.styleLoaders = function (options) {
+    let output = [];
+    let loaders = exports.cssLoaders(options);
+
+    Object.keys(loaders).forEach(function (extension) {
+        let loader = loaders[extension];
+        output.push({
+            // 路径
+            test: new RegExp('\\.' + extension + '$'),
+            // loader
+            use: loader
+        });
+    });
+
+    return output;
 }

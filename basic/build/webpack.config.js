@@ -4,11 +4,13 @@
 
 'use strict';
 
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
+
 const config = require('../config');
 const utils = require('./utils');
 const vueLoader = require('./vue-loader');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 // 别名路径
 function resolve (dir) {
@@ -44,29 +46,29 @@ module.exports = {
         rules: [
             {
                 test: /\.vue$/,
-                use: [
-                    {
-                        loader: 'vue-loader',
-                        options: vueLoader
-                    }
-                ]
+                loader: 'vue-loader',
+                options: vueLoader
             },
             /// 它会应用到普通的 `.js` 文件
             // 以及 `.vue` 文件中的 `<script>` 块
             {
-                test: /\.js$/,
-                exclude: /(node_modules)/,
+                test: /\.js?$/,
+                exclude: file => (
+                    /node_modules/.test(file) &&
+                    !/\.vue\.js/.test(file)
+                ),
                 use: {
-                  loader: 'babel-loader',
+                    loader: 'babel-loader',
                 }
-              },
+            },
             // 它会应用到普通的 `.css` 文件
             // 以及 `.vue` 文件中的 `<style>` 块
             {
                 test: /\.css$/,
                 use: [
-                    'vue-style-loader',
-                    'style-loader',
+                    process.env.NODE_ENV !== 'production'
+                        ? 'vue-style-loader'
+                        : MiniCssExtractPlugin.loader,
                     'css-loader'
                 ]
             },

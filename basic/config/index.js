@@ -36,7 +36,7 @@ module.exports = {
         // 将webpack生成的资源嵌入此目录中build.assetsRoot
         assetsSubDirectory: 'static',
         // 这应该是build.assetsRoot通过HTTP提供服务的URL路径
-        assetsPublicPath: '/',
+        assetsPublicPath: './',
         // 是否为生产构建生成源映射
         productionSourceMap: true,
 

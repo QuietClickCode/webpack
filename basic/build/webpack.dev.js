@@ -9,15 +9,12 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const utils = require('./utils');
-const config = require('../config');
-const webpackConfig = require('./webpack.config');
 // 识别某些类别的webpack错误，并清理，聚合和优先级，以提供更好的开发人员体验。
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 
-function resolve (dir) {
-    return path.join(__dirname, '..', dir);
-}
+const utils = require('./utils');
+const config = require('../config');
+const webpackConfig = require('./webpack.config');
 
 // 将热重新加载相关代码添加到条目块
 Object.keys(webpackConfig.entry).forEach(function (name) {
@@ -34,6 +31,7 @@ module.exports = merge(webpackConfig, {
             'process.env': config.dev.env
         }),
 
+        // 将css提取到自己的文件中
         new MiniCssExtractPlugin({
             filename: utils.assetsPath('css/[name].css')
         }),

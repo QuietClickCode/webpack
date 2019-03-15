@@ -16,9 +16,10 @@ const opn = require('opn');
 const path  = require('path');
 const webpack = require('webpack');
 const express = require('express');
-const webpackConfig = require('./webpack.dev');
 // 轻松的配置代理服务器中间件
 const proxyMiddleware = require('http-proxy-middleware');
+
+const webpackConfig = require('./webpack.dev');
 
 let app = express();
 // 默认调试服务器端口
