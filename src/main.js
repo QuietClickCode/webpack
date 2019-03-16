@@ -1,9 +1,9 @@
 
 import Vue from 'vue'
 import App from './App.vue'
-import IvueMaterial from 'ivue-material';
+import { IvueButton } from 'ivue-material';
 
-Vue.use(IvueMaterial);
+Vue.component('IvueButton', IvueButton);
 Vue.config.productionTip = false
 
 import 'ivue-material/dist/styles/ivue.css';

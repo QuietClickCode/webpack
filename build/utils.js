@@ -33,7 +33,7 @@ exports.cssLoaders = function (options) {
     function generateLoaders (loader, loaderOptions) {
         let loaders = [cssLoader];
 
-        if (loaders) {
+        if (loaders && loader) {
             loaders.push({
                 loader: loader + '-loader',
                 options: Object.assign({}, loaderOptions, {
@@ -45,20 +45,17 @@ exports.cssLoaders = function (options) {
         // 指定该选项时提取CSS
         //（在生产构建期间就是这种情况）
         if (options.extract) {
-            return [
-                process.env.NODE_ENV !== 'production'
-                    ? 'vue-style-loader'
-                    : MiniCssExtractPlugin.loader,
-                'css-loader'
-            ];
+            return process.env.NODE_ENV !== 'production'
+                ? 'vue-style-loader'
+                : MiniCssExtractPlugin.loader,
+                loaders;
         }
 
         return ['vue-style-loader'].concat(loaders);
     }
-
     // https://vue-loader.vuejs.org/en/configurations/extract-css.html
     return {
-        css: generateLoaders(),
+        // css: generateLoaders(),
         postcss: generateLoaders(),
         less: generateLoaders('less'),
         sass: generateLoaders('sass', { indentedSyntax: true }),
@@ -74,12 +71,11 @@ exports.styleLoaders = function (options) {
     let loaders = exports.cssLoaders(options);
 
     Object.keys(loaders).forEach(function (extension) {
-        let loader = loaders[extension];
         output.push({
             // 路径
             test: new RegExp('\\.' + extension + '$'),
             // loader
-            use: loader
+            use: loaders[extension]
         });
     });
 

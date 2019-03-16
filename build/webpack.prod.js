@@ -12,6 +12,7 @@ const webpackConfig = require('./webpack.config');
 const utils = require('./utils');
 const config = require('../config');
 
+
 let _webpackConfig = merge(webpackConfig, {
     mode: "production",
     module: {
@@ -44,26 +45,50 @@ let _webpackConfig = merge(webpackConfig, {
                 sourceMap: true,
                 uglifyOptions: {
                     compress: {
-                        warnings: false
+                        // 在UglifyJs删除没有用到的代码时不输出警告
+                        warnings: false,
+                        // 删除所有的 `console` 语句，可以兼容ie浏览器
+                        drop_console: true,
+                        // 内嵌定义了但是只用到一次的变量
+                        collapse_vars: true,
+                        // 提取出出现多次但是没有定义成变量去引用的静态值
+                        reduce_vars: true,
+                    },
+                    output: {
+                        // 最紧凑的输出
+                        beautify: false,
+                        // 删除所有的注释
+                        comments: false,
                     }
                 }
             }),
             // 最大限度地减少生产
             new OptimizeCSSAssetsPlugin({
+                assetNameRegExp: /\.css$/g,
+                cssProcessor: require('cssnano'),
                 cssProcessorOptions: {
-                    safe: true
+                    safe: true,
+                    discardComments: {
+                        removeAll: true
+                    }
                 }
             })
         ],
         splitChunks: {
-            // 拆分块的名称
-            name: 'manifest',
-            // 在将模块移入commons块之前需要包含模块的最小块数。
-            // 数字必须大于或等于2且小于或等于块数。
-            // 传递`Infinity`只会创建公共块，但不会移动任何模块。
-            // 通过提供`function`，您可以添加自定义逻辑。 （默认为块数）
-            minChunks: 2,
-            chunks: 'all'
+            chunks: 'all',   // initial、async和all
+            minSize: 30000,   // 形成一个新代码块最小的体积
+            maxAsyncRequests: 5,   // 按需加载时候最大的并行请求数
+            maxInitialRequests: 3,   // 最大初始化请求数
+            automaticNameDelimiter: '~',   // 打包分割符
+            name: true,
+            cacheGroups: {
+                // vendors: { // 项目基本框架等
+                //     chunks: 'all',
+                //     test: /antd/,
+                //     priority: 100,
+                //     name: 'vendors',
+                // }
+            }
         }
     },
     plugins: [
