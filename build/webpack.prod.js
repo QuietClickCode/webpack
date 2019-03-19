@@ -1,3 +1,5 @@
+// https://markus.oberlehner.net/blog/setting-up-a-vue-project-with-webpack-4-and-babel-7/
+
 const path = require('path')
 const utils = require('./utils')
 const webpack = require('webpack')
@@ -8,7 +10,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-
+const TerserPlugin = require('terser-webpack-plugin');
+// 清理dist文件
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const env = require('../config/prod.env');
 
 const webpackConfig = merge(baseWebpackConfig, {
@@ -34,42 +38,32 @@ const webpackConfig = merge(baseWebpackConfig, {
         // chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
     },
     optimization: {
-        // minimizer: [
-        //     // 删除的“未使用代码(dead code)”
-        //     // "mode" 配置选项轻松切换到压缩输出
-        //     new UglifyJsPlugin({
-        //         cache: true,
-        //         parallel: true,
-        //         // set to true if you want JS source maps
-        //         sourceMap: true,
-        //         uglifyOptions: {
-        //             compress: {
-        //                 // 在UglifyJs删除没有用到的代码时不输出警告
-        //                 warnings: false,
-        //                 // 删除所有的 `console` 语句，可以兼容ie浏览器
-        //                 drop_console: true,
-        //                 // 内嵌定义了但是只用到一次的变量
-        //                 collapse_vars: true,
-        //                 // 提取出出现多次但是没有定义成变量去引用的静态值
-        //                 reduce_vars: true,
-        //             },
-        //             output: {
-        //                 // 最紧凑的输出
-        //                 beautify: false,
-        //                 // 删除所有的注释
-        //                 comments: false,
-        //             }
-        //         }
-        //     }),
-        //     // 最大限度地减少生产
-        //     new OptimizeCSSAssetsPlugin({
-        //         assetNameRegExp: /\.css$/g,
-        //         cssProcessor: require('cssnano'),
-        //         cssProcessorOptions: config.build.productionSourceMap
-        //             ? { safe: true, map: { inline: false } }
-        //             : { safe: true }
-        //     })
-        // ],
+        minimizer: [
+            new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true, // Must be set to true if using source-maps in production
+                terserOptions: {
+                    // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+                    compress: {
+                        // 在UglifyJs删除没有用到的代码时不输出警告
+                        warnings: false,
+                        // 删除所有的 `console` 语句，可以兼容ie浏览器
+                        drop_console: true,
+                        // 内嵌定义了但是只用到一次的变量
+                        collapse_vars: true,
+                        // 提取出出现多次但是没有定义成变量去引用的静态值
+                        reduce_vars: true,
+                    },
+                    output: {
+                        // 最紧凑的输出
+                        beautify: false,
+                        // 删除所有的注释
+                        comments: false,
+                    }
+                }
+            }),
+        ],
         splitChunks: {
             chunks: 'async',   // initial、async和all
             name: true,
@@ -92,6 +86,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         }
     },
     plugins: [
+        new CleanWebpackPlugin(),
         // 清理 /dist 文件夹
         // new CleanWebpackPlugin(),
         // short-circuits all Vue.js warning code
@@ -105,9 +100,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             // allChunks: true
         }),
 
-        // new MiniCssExtractPlugin({
-        //     filename: 'style.css'
-        // }),
+
         new OptimizeCSSPlugin({
             cssProcessorOptions: config.build.productionSourceMap
                 ? { safe: true, map: { inline: false } }

@@ -7,17 +7,24 @@ const path = require('path');
 const config = require('../config');
 const utils = require('./utils');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const nodeSassMagicImporter = require('node-sass-magic-importer');
+// 测量你的webpack构建速度
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
+const smp = new SpeedMeasurePlugin();
+
+const env = process.env.NODE_ENV;
+const sourceMap = env === 'development';
+
 
 // 别名路径
 function resolve (dir) {
     return path.join(__dirname, '..', dir);
 }
 
-module.exports = {
+const webpackConfig = {
     context: path.resolve(__dirname, '../'),
     entry: {
-        // app: ['@babel/polyfill', './src/main.js']
-        // app: ['babel-polyfill', './src/main.js'],
         app: './src/main.js'
     },
     output: {
@@ -42,10 +49,6 @@ module.exports = {
             '@': resolve('src')
         }
     },
-    // 压缩ES6
-    // optimization: {
-    //     minimizer: [new TerserPlugin()],
-    // },
     module: {
         rules: [
             {
@@ -64,6 +67,24 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap,
+                        },
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap,
+                            importer: nodeSassMagicImporter(),
+                        },
+                    },
+                ],
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -93,7 +114,7 @@ module.exports = {
     },
     plugins: [
         // 请确保引入这个插件来施展魔法
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
     ],
     node: {
         // prevent webpack from injecting useless setImmediate polyfill because Vue
@@ -108,3 +129,5 @@ module.exports = {
         child_process: 'empty'
     }
 }
+
+module.exports = smp.wrap(webpackConfig);
