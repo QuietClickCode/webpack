@@ -3,13 +3,14 @@
  */
 
 // 'use strict';
-
+const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 识别某些类别的webpack错误，并清理，聚合和优先级，以提供更好的开发人员体验。
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const utils = require('./utils');
 const config = require('../config');
@@ -23,7 +24,15 @@ Object.keys(webpackConfig.entry).forEach(function (name) {
 module.exports = merge(webpackConfig, {
     mode: "development",
     // cheap-module-eval-source-map 开发速度更快
-    devtool: '#cheap-module-eval-source-map',
+    devtool: config.dev.devtool,
+    module: {
+        rules: utils.styleLoaders({
+            hotReload: true,
+            extract: true,
+            sourceMap: config.dev.cssSourceMap,
+            usePostCSS: true
+        })
+    },
     plugins: [
         // 允许您创建可在配置全局常量的编译时间
         new webpack.DefinePlugin({
@@ -50,6 +59,15 @@ module.exports = merge(webpackConfig, {
             inject: true
         }),
 
-        new FriendlyErrorsPlugin()
+        new FriendlyErrorsPlugin(),
+
+        // copy custom static assets
+        new CopyWebpackPlugin([
+        {
+          from: path.resolve(__dirname, '../static'),
+          to: config.dev.assetsSubDirectory,
+          ignore: ['.*']
+        }
+      ])
     ]
 });

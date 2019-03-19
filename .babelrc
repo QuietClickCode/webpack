@@ -8,18 +8,13 @@
         ]
     ],
     "plugins": [
-        "@babel/plugin-transform-runtime",
         "@babel/plugin-syntax-dynamic-import",
-        "@babel/plugin-syntax-import-meta",
-        "@babel/plugin-proposal-class-properties",
-        "@babel/plugin-proposal-json-strings",
         [
             "import",
             {
-                "libraryName": "ivue",
+                "libraryName": "ivue-material",
                 "libraryDirectory": "src/components"
             }
         ]
-    ],
-    "comments": false
+    ]
 }

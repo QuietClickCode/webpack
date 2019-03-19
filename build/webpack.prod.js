@@ -1,29 +1,28 @@
-const path = require('path');
-const webpack = require('webpack');
-const merge = require('webpack-merge');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const path = require('path')
+const utils = require('./utils')
+const webpack = require('webpack')
+const config = require('../config')
+const merge = require('webpack-merge')
+const baseWebpackConfig = require('./webpack.config')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
-const webpackConfig = require('./webpack.config');
-const utils = require('./utils');
-const config = require('../config');
+const env = require('../config/prod.env');
 
-
-let _webpackConfig = merge(webpackConfig, {
+const webpackConfig = merge(baseWebpackConfig, {
     mode: "production",
     module: {
         rules: utils.styleLoaders({
             // 是否为生产构建生成源映射
             sourceMap: config.build.productionSourceMap,
-            extract: true
+            extract: true,
+            usePostCSS: true
         })
     },
     // 完整的SourceMap作为单独的文件发出
-    devtool: config.build.productionSourceMap ? '#source-map' : false,
+    devtool: config.build.productionSourceMap ? config.build.devtool : false,
     // 将编译后的文件写入磁盘
     output: {
         // 输出目录作为绝对路径
@@ -32,82 +31,89 @@ let _webpackConfig = merge(webpackConfig, {
         // 确定每个输出包的名称
         filename: utils.assetsPath('js/[name].[chunkhash].js'),
         // 确定非条目块文件的名称
-        chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+        // chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
     },
     optimization: {
-        minimizer: [
-            // 删除的“未使用代码(dead code)”
-            // "mode" 配置选项轻松切换到压缩输出
-            new UglifyJsPlugin({
-                cache: true,
-                parallel: true,
-                // set to true if you want JS source maps
-                sourceMap: true,
-                uglifyOptions: {
-                    compress: {
-                        // 在UglifyJs删除没有用到的代码时不输出警告
-                        warnings: false,
-                        // 删除所有的 `console` 语句，可以兼容ie浏览器
-                        drop_console: true,
-                        // 内嵌定义了但是只用到一次的变量
-                        collapse_vars: true,
-                        // 提取出出现多次但是没有定义成变量去引用的静态值
-                        reduce_vars: true,
-                    },
-                    output: {
-                        // 最紧凑的输出
-                        beautify: false,
-                        // 删除所有的注释
-                        comments: false,
-                    }
-                }
-            }),
-            // 最大限度地减少生产
-            new OptimizeCSSAssetsPlugin({
-                assetNameRegExp: /\.css$/g,
-                cssProcessor: require('cssnano'),
-                cssProcessorOptions: {
-                    safe: true,
-                    discardComments: {
-                        removeAll: true
-                    }
-                }
-            })
-        ],
+        // minimizer: [
+        //     // 删除的“未使用代码(dead code)”
+        //     // "mode" 配置选项轻松切换到压缩输出
+        //     new UglifyJsPlugin({
+        //         cache: true,
+        //         parallel: true,
+        //         // set to true if you want JS source maps
+        //         sourceMap: true,
+        //         uglifyOptions: {
+        //             compress: {
+        //                 // 在UglifyJs删除没有用到的代码时不输出警告
+        //                 warnings: false,
+        //                 // 删除所有的 `console` 语句，可以兼容ie浏览器
+        //                 drop_console: true,
+        //                 // 内嵌定义了但是只用到一次的变量
+        //                 collapse_vars: true,
+        //                 // 提取出出现多次但是没有定义成变量去引用的静态值
+        //                 reduce_vars: true,
+        //             },
+        //             output: {
+        //                 // 最紧凑的输出
+        //                 beautify: false,
+        //                 // 删除所有的注释
+        //                 comments: false,
+        //             }
+        //         }
+        //     }),
+        //     // 最大限度地减少生产
+        //     new OptimizeCSSAssetsPlugin({
+        //         assetNameRegExp: /\.css$/g,
+        //         cssProcessor: require('cssnano'),
+        //         cssProcessorOptions: config.build.productionSourceMap
+        //             ? { safe: true, map: { inline: false } }
+        //             : { safe: true }
+        //     })
+        // ],
         splitChunks: {
-            chunks: 'all',   // initial、async和all
-            minSize: 30000,   // 形成一个新代码块最小的体积
-            maxAsyncRequests: 5,   // 按需加载时候最大的并行请求数
-            maxInitialRequests: 3,   // 最大初始化请求数
-            automaticNameDelimiter: '~',   // 打包分割符
+            chunks: 'async',   // initial、async和all
             name: true,
+            // minSize: 30000,   // 形成一个新代码块最小的体积
+            // maxAsyncRequests: 5,   // 按需加载时候最大的并行请求数
+            // maxInitialRequests: 3,   // 最大初始化请求数
+            // automaticNameDelimiter: '~',   // 打包分割符
             cacheGroups: {
-                // vendors: { // 项目基本框架等
-                //     chunks: 'all',
-                //     test: /antd/,
-                //     priority: 100,
-                //     name: 'vendors',
-                // }
+                common: {
+                    name: 'common',
+                    chunks: 'initial',
+                    minChunks: 2
+                },
+                vendors: {
+                    name: 'vendors',
+                    chunks: 'all',
+                    test: /[\\/]node_modules[\\/]/
+                }
             }
         }
     },
     plugins: [
         // 清理 /dist 文件夹
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         // short-circuits all Vue.js warning code
         new webpack.DefinePlugin({
-            'process.env': config.build.env,
+            'process.env': env,
         }),
-
 
         // 将css提取到自己的文件中
         new MiniCssExtractPlugin({
-            filename: utils.assetsPath('css/[name].[contenthash].css')
+            filename: utils.assetsPath('css/[name].[contenthash].css'),
+            // allChunks: true
         }),
 
         // new MiniCssExtractPlugin({
         //     filename: 'style.css'
         // }),
+        new OptimizeCSSPlugin({
+            cssProcessorOptions: config.build.productionSourceMap
+                ? { safe: true, map: { inline: false } }
+                : { safe: true }
+        }),
+
 
         // 使用正确的资产哈希生成dist index.html以进行缓存。
         // 您可以通过编辑/index.html来自定义输出
@@ -136,6 +142,11 @@ let _webpackConfig = merge(webpackConfig, {
             chunksSortMode: 'dependency'
         }),
 
+        // keep module.id stable when vendor modules does not change
+        new webpack.HashedModuleIdsPlugin(),
+        // enable scope hoisting
+        new webpack.optimize.ModuleConcatenationPlugin(),
+
         // 复制自定义静态资产
         new CopyWebpackPlugin([
             {
@@ -154,7 +165,7 @@ let _webpackConfig = merge(webpackConfig, {
 if (config.build.productionGzip) {
     const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
-    _webpackConfig.plugins.push(
+    webpackConfig.plugins.push(
         new CompressionWebpackPlugin({
             filename: '[path].gz[query]',
             algorithm: 'gzip',
@@ -179,7 +190,7 @@ if (config.build.productionGzip) {
 // 使用交互式可缩放树形图可视化webpack输出文件的大小。
 if (config.build.bundleAnalyzerReport) {
     const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-    _webpackConfig.plugins.push(new BundleAnalyzerPlugin);
+    webpackConfig.plugins.push(new BundleAnalyzerPlugin());
 }
 
-module.exports = _webpackConfig;
+module.exports = webpackConfig;

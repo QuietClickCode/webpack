@@ -3,14 +3,10 @@
  */
 
 'use strict';
-
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
-
 const config = require('../config');
 const utils = require('./utils');
-const vueLoader = require('./vue-loader');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 // 别名路径
 function resolve (dir) {
@@ -18,14 +14,18 @@ function resolve (dir) {
 }
 
 module.exports = {
+    context: path.resolve(__dirname, '../'),
     entry: {
-        app: ['@babel/polyfill', './src/main.js']
+        // app: ['@babel/polyfill', './src/main.js']
+        // app: ['babel-polyfill', './src/main.js'],
+        app: './src/main.js'
     },
     output: {
         // 输出目录作为绝对路径。
         path: config.build.assetsRoot,
         // 此选项确定每个输出包的名称。捆绑包将写入该output.path选项指定的目录。
-        filename: '[name].js',
+        // filename: '[name].js',
+        filename: utils.assetsPath('[name].js'),
         // path is '/'
         // 当使用按需加载或加载外部资源（如图像，文件等）时，这是一个重要选项
         publicPath: process.env.NODE_ENV === 'production'
@@ -42,43 +42,43 @@ module.exports = {
             '@': resolve('src')
         }
     },
+    // 压缩ES6
+    // optimization: {
+    //     minimizer: [new TerserPlugin()],
+    // },
     module: {
         rules: [
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: vueLoader
-            },
-            /// 它会应用到普通的 `.js` 文件
-            // 以及 `.vue` 文件中的 `<script>` 块
-            {
-                test: /\.js?$/,
-                exclude: file => (
-                    /node_modules/.test(file) &&
-                    !/\.vue\.js/.test(file)
-                ),
-                use: {
-                    loader: 'babel-loader',
+                options: {
+                    transformAssetUrls: {
+                        video: ['src', 'poster'],
+                        source: 'src',
+                        img: 'src',
+                        image: 'xlink:href'
+                    }
                 }
             },
-            // 它会应用到普通的 `.css` 文件
-            // 以及 `.vue` 文件中的 `<style>` 块
             {
-                test: /\.css$/,
-                use: [
-                    process.env.NODE_ENV !== 'production'
-                        ? 'vue-style-loader'
-                        : MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
+                test: /\.js$/,
+                loader: 'babel-loader',
+                include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    // static/img
                     name: utils.assetsPath('img/[name].[hash:7].[ext]')
+                }
+            },
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: utils.assetsPath('media/[name].[hash:7].[ext]')
                 }
             },
             {
@@ -86,7 +86,6 @@ module.exports = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    // static/fonts
                     name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
                 }
             }
@@ -95,5 +94,17 @@ module.exports = {
     plugins: [
         // 请确保引入这个插件来施展魔法
         new VueLoaderPlugin()
-    ]
+    ],
+    node: {
+        // prevent webpack from injecting useless setImmediate polyfill because Vue
+        // source contains it (although only uses it if it's native).
+        setImmediate: false,
+        // prevent webpack from injecting mocks to Node native modules
+        // that does not make sense for the client
+        dgram: 'empty',
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty'
+    }
 }

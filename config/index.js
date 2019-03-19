@@ -18,14 +18,23 @@ module.exports = {
         host: 'localhost',
         // 指定要侦听的开发服务器的端口
         port: 8080,
-        autoOpenBrowser: true,
+        autoOpenBrowser: false,
+        errorOverlay: true,
+        notifyOnErrors: true,
+        poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
+
+        devtool: 'cheap-module-eval-source-map',
 
         // CSS Sourcemaps off by default because relative paths are "buggy"
         // with this option, according to the CSS-Loader README
         // (https://github.com/webpack/css-loader#sourcemaps)
         // In our experience, they generally work as expected,
         // just be aware of this issue when enabling this option.
-        cssSourceMap: false
+        cssSourceMap: false,
+        // If you have problems debugging vue-files in devtools,
+        // set this to false - it *may* help
+        // https://vue-loader.vuejs.org/en/options.html#cachebusting
+        cacheBusting: true,
     },
     build: {
         env: require('./prod.env'),
@@ -36,9 +45,9 @@ module.exports = {
         // 将webpack生成的资源嵌入此目录中build.assetsRoot
         assetsSubDirectory: 'static',
         // 这应该是build.assetsRoot通过HTTP提供服务的URL路径
-        assetsPublicPath: './',
+        assetsPublicPath: '/',
         // 是否为生产构建生成源映射
-        productionSourceMap: true,
+        productionSourceMap: false,
 
         //默认情况下Gzip关闭许多流行的静态主机，例如
         // Surge或Netlify已经为您准备了所有静态资产。
