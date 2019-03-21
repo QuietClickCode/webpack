@@ -8,14 +8,15 @@ const config = require('../config');
 const utils = require('./utils');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const nodeSassMagicImporter = require('node-sass-magic-importer');
-// 测量你的webpack构建速度
-const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
-
-const smp = new SpeedMeasurePlugin();
+const { useWorkbox } = require('./utils/workbox');
+// const SWRegisterWebpackPlugin = require('sw-register-webpack-plugin');
+const { GenerateSW } = require('workbox-webpack-plugin');
 
 const env = process.env.NODE_ENV;
 const sourceMap = env === 'development';
-
+const prod = env === 'production';
+// serviceWorker 配置
+const serviceWorker = config.serviceWorker;
 
 // 别名路径
 function resolve (dir) {
@@ -35,7 +36,7 @@ const webpackConfig = {
         filename: utils.assetsPath('[name].js'),
         // path is '/'
         // 当使用按需加载或加载外部资源（如图像，文件等）时，这是一个重要选项
-        publicPath: process.env.NODE_ENV === 'production'
+        publicPath: prod
             ? config.build.assetsPublicPath
             : config.dev.assetsPublicPath
     },
@@ -130,4 +131,25 @@ const webpackConfig = {
     }
 }
 
-module.exports = smp.wrap(webpackConfig);
+if (prod && serviceWorker && serviceWorker.enable !== false) {
+    // Use workbox@3.x in prod mode.
+    useWorkbox(webpackConfig, config);
+
+    // 在useWorkbox之后，serviceWorker.enable可能会更改
+    if (serviceWorker.enable !== false) {
+        // 将服务工作者的注册码注入HTML
+        // webpackConfig.plugins.push(new GenerateSW({
+        //     // swDest: path.resolve(__dirname, '../.ivue/sw-register.js'),
+        //     modifyURLPrefix: {
+        //         [`${(serviceWorker && serviceWorker.swPath) || config.build.assetsPublicPath}`]: ''
+        //     }
+        // }));
+
+        // clientConfig.plugin('sw-register').use(SWRegisterWebpackPlugin, [{
+        //     filePath: resolve(__dirname, 'templates/sw-register.js'),
+        //     prefix: (serviceWorker && serviceWorker.swPath) || publicPath
+        // }]).after('html');
+    }
+}
+
+module.exports = webpackConfig;
