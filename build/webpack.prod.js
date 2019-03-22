@@ -98,6 +98,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         // 将css提取到自己的文件中
         new MiniCssExtractPlugin({
             filename: utils.assetsPath('css/[name].[contenthash].css'),
+            chunkFilename: "[id].css"
             // allChunks: true
         }),
 

@@ -2,20 +2,25 @@
  * @file service-worker.js with workbox api
  * @desc [example](https://workbox-samples.glitch.me/examples/workbox-sw/)
  */
-
 /* globals workbox */
 workbox.core.setCacheNameDetails({
-    prefix: 'lavas-cache',
+    prefix: 'ivue-cache',
     suffix: 'v1',
     precache: 'install-time',
     runtime: 'run-time',
     googleAnalytics: 'ga'
 });
-workbox.skipWaiting();
-workbox.clientsClaim();
+workbox.core.skipWaiting();
 
-workbox.precaching.precacheAndRoute(self.__precacheManifest || []);
+workbox.core.clientsClaim();
 
+/**
+ * The workboxSW.precacheAndRoute() method efficiently caches and responds to
+ * requests for URLs in the manifest.
+ * See https://goo.gl/S9QRab
+ */
+self.__precacheManifest = [].concat(self.__precacheManifest || []);
+workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 /**
  * example runningCache with api
  */

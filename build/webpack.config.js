@@ -9,7 +9,8 @@ const utils = require('./utils');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const nodeSassMagicImporter = require('node-sass-magic-importer');
 const { useWorkbox } = require('./utils/workbox');
-// const SWRegisterWebpackPlugin = require('sw-register-webpack-plugin');
+const SWRegisterWebpackPlugin = require('./sw-register-webpack-plugin');
+const { copyWorkboxLibraries } = require('workbox-build');
 const { GenerateSW } = require('workbox-webpack-plugin');
 
 const env = process.env.NODE_ENV;
@@ -115,7 +116,7 @@ const webpackConfig = {
     },
     plugins: [
         // 请确保引入这个插件来施展魔法
-        new VueLoaderPlugin(),
+        new VueLoaderPlugin()
     ],
     node: {
         // prevent webpack from injecting useless setImmediate polyfill because Vue
@@ -131,25 +132,36 @@ const webpackConfig = {
     }
 }
 
-if (prod && serviceWorker && serviceWorker.enable !== false) {
-    // Use workbox@3.x in prod mode.
-    useWorkbox(webpackConfig, config);
 
-    // 在useWorkbox之后，serviceWorker.enable可能会更改
-    if (serviceWorker.enable !== false) {
-        // 将服务工作者的注册码注入HTML
-        // webpackConfig.plugins.push(new GenerateSW({
-        //     // swDest: path.resolve(__dirname, '../.ivue/sw-register.js'),
-        //     modifyURLPrefix: {
-        //         [`${(serviceWorker && serviceWorker.swPath) || config.build.assetsPublicPath}`]: ''
-        //     }
-        // }));
+// if (prod && serviceWorker && serviceWorker.enable !== false) {
+//     // Use workbox@3.x in prod mode.
+//     useWorkbox(webpackConfig, config);
 
-        // clientConfig.plugin('sw-register').use(SWRegisterWebpackPlugin, [{
-        //     filePath: resolve(__dirname, 'templates/sw-register.js'),
-        //     prefix: (serviceWorker && serviceWorker.swPath) || publicPath
-        // }]).after('html');
-    }
-}
+//     // 在useWorkbox之后，serviceWorker.enable可能会更改
+//     if (serviceWorker.enable !== false) {
+
+//         // 将服务工作者的注册码注入HTML
+//         webpackConfig.plugins.push(new SWRegisterWebpackPlugin({
+//             filePath: path.resolve(__dirname, '../.ivue/sw-register.js'),
+//             prefix: (serviceWorker && serviceWorker.swPath) || config.build.assetsPublicPath
+//         }));
+//     }
+
+// }
+
+
+// async function buildSW () {
+//     if (prod && serviceWorker && serviceWorker.enable !== false) {
+//         // 在useWorkbox之后，serviceWorker.enable可能会更改
+//         if (serviceWorker.enable !== false) {
+//             await copyWorkboxLibraries('dist/static');
+//         }
+//     }
+// }
+
+// setTimeout(() => {
+//     buildSW()
+// }, 1000)
+
 
 module.exports = webpackConfig;

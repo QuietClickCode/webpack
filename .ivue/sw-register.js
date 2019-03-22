@@ -2,7 +2,7 @@
  * @file 注册 service worker
  */
 
-function emitUpdate() {
+function emitUpdate () {
     var event = document.createEvent('Event');
     event.initEvent('sw.update', true, true);
     window.dispatchEvent(event);
@@ -27,7 +27,7 @@ if ('serviceWorker' in navigator) {
                 }
             };
         };
-    }).catch(function(e) {
+    }).catch(function (e) {
         console.error('Error during service worker registration:', e);
     });
 }

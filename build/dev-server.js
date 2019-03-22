@@ -42,9 +42,10 @@ let hotMiddleware = require('webpack-hot-middleware')(compiler, {
     log: function () { }
 });
 
+
 // 当 html-webpack-plugin 的模版文件更新的时候，强制重新刷新调试页面
-compiler.plugin('compilation', function (compilation) {
-    compilation.plugin('html-webpack-plugin-after-emit', function (data, cb) {
+compiler.hooks.shouldEmit.tap('compilation', function (compilation) {
+    compilation.hooks.additionalAssets.tapAsync('html-webpack-plugin-after-emit', function (data, cb) {
         hotMiddleware.publish({
             action: 'reload'
         });
