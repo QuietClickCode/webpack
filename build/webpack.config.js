@@ -11,11 +11,12 @@ const nodeSassMagicImporter = require('node-sass-magic-importer');
 const { useWorkbox } = require('./utils/workbox');
 const SWRegisterWebpackPlugin = require('./sw-register-webpack-plugin');
 const { copyWorkboxLibraries } = require('workbox-build');
-const { GenerateSW } = require('workbox-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const env = process.env.NODE_ENV;
 const sourceMap = env === 'development';
 const prod = env === 'production';
+
 // serviceWorker 配置
 const serviceWorker = config.serviceWorker;
 
@@ -57,6 +58,8 @@ const webpackConfig = {
                 test: /\.vue$/,
                 loader: 'vue-loader',
                 options: {
+                    cssSourceMap: true,
+                    cacheBusting: true,
                     transformAssetUrls: {
                         video: ['src', 'poster'],
                         source: 'src',
@@ -73,6 +76,10 @@ const webpackConfig = {
             {
                 test: /\.scss$/,
                 use: [
+                    // {
+                    //     loader: "style-loader"
+                    // },
+                    MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
@@ -86,7 +93,7 @@ const webpackConfig = {
                             importer: nodeSassMagicImporter(),
                         },
                     },
-                ],
+                ]
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -133,35 +140,23 @@ const webpackConfig = {
 }
 
 
-// if (prod && serviceWorker && serviceWorker.enable !== false) {
-//     // Use workbox@3.x in prod mode.
-//     useWorkbox(webpackConfig, config);
+if (prod && serviceWorker && serviceWorker.enable !== false) {
+    // Use workbox@3.x in prod mode.
+    useWorkbox(webpackConfig, config);
 
-//     // 在useWorkbox之后，serviceWorker.enable可能会更改
-//     if (serviceWorker.enable !== false) {
+    // 在useWorkbox之后，serviceWorker.enable可能会更改
+    if (serviceWorker.enable !== false) {
+        setTimeout(() => {
+            copyWorkboxLibraries('dist/static');
+        }, 1000);
 
-//         // 将服务工作者的注册码注入HTML
-//         webpackConfig.plugins.push(new SWRegisterWebpackPlugin({
-//             filePath: path.resolve(__dirname, '../.ivue/sw-register.js'),
-//             prefix: (serviceWorker && serviceWorker.swPath) || config.build.assetsPublicPath
-//         }));
-//     }
+        // 将服务工作者的注册码注入HTML
+        webpackConfig.plugins.push(new SWRegisterWebpackPlugin({
+            filePath: path.resolve(__dirname, '../.ivue/sw-register.js'),
+            prefix: (serviceWorker && serviceWorker.swPath) || config.build.assetsPublicPath
+        }));
+    }
 
-// }
-
-
-// async function buildSW () {
-//     if (prod && serviceWorker && serviceWorker.enable !== false) {
-//         // 在useWorkbox之后，serviceWorker.enable可能会更改
-//         if (serviceWorker.enable !== false) {
-//             await copyWorkboxLibraries('dist/static');
-//         }
-//     }
-// }
-
-// setTimeout(() => {
-//     buildSW()
-// }, 1000)
-
+}
 
 module.exports = webpackConfig;

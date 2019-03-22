@@ -11,6 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
+const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin')
 
 // 清理dist文件
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -36,7 +37,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         // 确定每个输出包的名称
         filename: utils.assetsPath('js/[name].[chunkhash].js'),
         // 确定非条目块文件的名称
-        // chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+        chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
     },
     optimization: {
         minimizer: [
@@ -97,16 +98,20 @@ const webpackConfig = merge(baseWebpackConfig, {
 
         // 将css提取到自己的文件中
         new MiniCssExtractPlugin({
-            filename: utils.assetsPath('css/[name].[contenthash].css'),
-            chunkFilename: "[id].css"
+            filename: utils.assetsPath('css/[name].[contenthash].css')
             // allChunks: true
         }),
 
+        // inject skeleton content(DOM & CSS) into HTML
+        new SkeletonWebpackPlugin({
+            webpackConfig: require('./webpack.skeleton'),
+            quiet: true
+        }),
 
         new OptimizeCSSPlugin({
-            cssProcessorOptions: config.build.productionSourceMap
-                ? { safe: true, map: { inline: false } }
-                : { safe: true }
+            cssProcessorOptions: {
+                safe: true
+            }
         }),
 
 
@@ -122,6 +127,8 @@ const webpackConfig = merge(baseWebpackConfig, {
             // 传递true或'body'所有javascript资源将被放置在body元素的底部。
             // 'head'将脚本放在head元素中
             inject: true,
+            isProdEnv: process.env.NODE_ENV === 'production',
+            minifyCSS: true,
             // 将html-minifier的选项作为对象来缩小输出
             minify: {
                 // Strip HTML comments
@@ -138,9 +145,9 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),
 
         // keep module.id stable when vendor modules does not change
-        new webpack.HashedModuleIdsPlugin(),
+        // new webpack.HashedModuleIdsPlugin(),
         // enable scope hoisting
-        new webpack.optimize.ModuleConcatenationPlugin(),
+        // new webpack.optimize.ModuleConcatenationPlugin(),
 
         // 复制自定义静态资产
         new CopyWebpackPlugin([

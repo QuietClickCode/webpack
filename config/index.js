@@ -47,8 +47,6 @@ module.exports = {
         assetsSubDirectory: 'static',
         // 这应该是build.assetsRoot通过HTTP提供服务的URL路径
         assetsPublicPath: '/',
-        // 是否为生产构建生成源映射
-        productionSourceMap: false,
 
         //默认情况下Gzip关闭许多流行的静态主机，例如
         // Surge或Netlify已经为您准备了所有静态资产。
@@ -62,10 +60,6 @@ module.exports = {
         //`npm run build --report`
         //设置为“true”或“false”以始终打开或关闭它
         bundleAnalyzerReport: process.env.npm_config_report
-    },
-    router: {
-        mode: 'history',
-        base: '/'
     },
     // serviceWorker
     serviceWorker: {

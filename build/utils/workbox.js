@@ -23,8 +23,7 @@ const { InjectManifest } = require('workbox-webpack-plugin');
 exports.useWorkbox = function (webpackConfig, userConfig) {
     let {
         build: { assetsPublicPath },
-        serviceWorker: workboxConfig,
-        router: { base = '/' },
+        serviceWorker: workboxConfig
     } = userConfig;
 
     // workbox 参数
@@ -54,10 +53,6 @@ exports.useWorkbox = function (webpackConfig, userConfig) {
     workboxConfig = Object.assign({}, workboxConfig, workboxInjectManifestConfig, {
         swDest
     });
-
-    if (base !== '/' && !base.endsWith('/')) {
-        base += '/';
-    }
 
     // 用户提供的service-worker
     let serviceWorkerContent = readFileSync(swSrc);

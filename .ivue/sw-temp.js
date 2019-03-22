@@ -9,7 +9,7 @@
  */
 /* globals workbox */
 workbox.core.setCacheNameDetails({
-    prefix: 'lavas-cache',
+    prefix: 'ivue-cache',
     suffix: 'v1',
     precache: 'install-time',
     runtime: 'run-time',
