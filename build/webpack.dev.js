@@ -10,7 +10,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 识别某些类别的webpack错误，并清理，聚合和优先级，以提供更好的开发人员体验。
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-// 骨架屏插件
 const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin');
 
 const utils = require('./utils');
@@ -53,17 +52,8 @@ module.exports = merge(webpackConfig, {
 
         // 使用骨架屏插件
         // inject skeleton content(DOM & CSS) into HTML
-        // new SkeletonWebpackPlugin({
-        //     webpackConfig: require('./webpack.skeleton'),
-        //     quiet: true
-        // }),
-
         new SkeletonWebpackPlugin({
-            webpackConfig: {
-                entry: {
-                    app: path.join(__dirname, '../src/entry-skeleton.js')
-                }
-            },
+            webpackConfig: require('./webpack.skeleton'),
             quiet: true
         }),
 
@@ -74,7 +64,8 @@ module.exports = merge(webpackConfig, {
             template: 'public/index.html',
             // 所有javascript资源将被放置在body元素的底部。
             // 'head'将脚本放在head元素中
-            inject: true
+            inject: true,
+            favicon: path.join(__dirname, '../src/assets/logo.png')
         }),
 
         // new FriendlyErrorsPlugin(),

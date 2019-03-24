@@ -25,6 +25,7 @@ workbox.core.clientsClaim();
  * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
+
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 /**
  * example runningCache with api

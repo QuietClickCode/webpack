@@ -22,7 +22,7 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
 
-    <% if (htmlWebpackPlugin.options.isProdEnv) { %>
+    <!-- <% if (htmlWebpackPlugin.options.isProdEnv) { %> -->
     <script>
         window.onload = function () {
             var script = document.createElement('script');
@@ -33,7 +33,7 @@
             firstScript.parentNode.insertBefore(script, firstScript);
         };
     </script>
-    <% } %>
+    <!-- <% } %> -->
 </body>
 
 </html>
