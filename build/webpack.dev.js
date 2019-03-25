@@ -28,8 +28,8 @@ module.exports = merge(webpackConfig, {
     devtool: config.dev.devtool,
     module: {
         rules: utils.styleLoaders({
-            // hotReload: true,
-            // extract: true,
+            hotReload: true,
+            extract: true,
             sourceMap: config.dev.cssSourceMap,
             usePostCSS: true
         })
@@ -67,8 +67,6 @@ module.exports = merge(webpackConfig, {
             inject: true,
             favicon: path.join(__dirname, '../src/assets/logo.png')
         }),
-
-        // new FriendlyErrorsPlugin(),
 
         // copy custom static assets
         new CopyWebpackPlugin([

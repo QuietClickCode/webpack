@@ -98,7 +98,7 @@ function SwRegisterPlugin (options = {}) {
     let filePath = path.resolve(cwd, (options.filePath || './src/sw-register.js'));
 
     if (!fs.existsSync(filePath)) {
-        filePath = path.resolve(__dirname, 'templates', 'sw-register.js');
+        filePath = path.resolve(__dirname, '../.ivue/sw-register.js');
     }
     this.filePath = filePath;
     this.fileName = options.output || path.basename(filePath);
@@ -116,7 +116,7 @@ function SwRegisterPlugin (options = {}) {
 
 SwRegisterPlugin.prototype.apply = function (compiler) {
     let me = this;
-    let swRegisterEntryFilePath = path.resolve(__dirname, 'templates', 'sw-register-entry.js.tpl');
+    let swRegisterEntryFilePath = path.resolve(__dirname, '../.ivue/sw-register-entry.js.tpl');
     let swRegisterFilePath = me.filePath;
 
     compiler.hooks.emit.tap('emit', (compilation, callback) => {

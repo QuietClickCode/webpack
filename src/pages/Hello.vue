@@ -2,7 +2,6 @@
     <div class="hello">
         <img src="../assets/logo.png" />
         <h1 class="gray--text">IVue</h1>
-        <router-link to="/hello">IVue</router-link>
         <ul>
             <li><a href="https://github.com/qq282126990/ivue-ui">IVue Github</a></li>
             <li><a href="https://lovevuerk.com">IVue 官网</a></li>

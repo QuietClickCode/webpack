@@ -1,3 +1,5 @@
+// https://github.com/lavas-project/vue-skeleton-webpack-plugin
+
 import Vue from 'vue';
 import Skeleton from './Skeleton.vue';
 

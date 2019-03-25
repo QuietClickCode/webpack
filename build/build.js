@@ -18,7 +18,7 @@ const chalk = require('chalk');
 const config = require('../config');
 const webpackProd = require('./webpack.prod');
 
-const spinner = ora('building for production...');
+const spinner = ora('br production...');
 spinner.start();
 
 // assetsRoot 这应该指向包含应用程序的所有静态资产的根目录

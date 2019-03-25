@@ -2,7 +2,8 @@
     <transition name="popup">
         <div class="update-toast" v-show="show">
             <span>{{ text }}</span>
-            <span class="update-toast-close-btn" @click="handleRefresh">
+            <span @click="handleRefresh">
+                <IvueIcon class="update-toast-close-btn">loop</IvueIcon>
             </span>
         </div>
     </transition>
@@ -80,6 +81,7 @@ $close-btn-height: 28px;
     text-align: center;
     border-radius: $close-btn-height;
     background: #999;
+    margin: initial;
   }
 }
 </style>

@@ -11,10 +11,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
-const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin')
+const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin');
 
-// 清理dist文件
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { useWorkbox } = require('../.ivue/workbox');
+const SWRegisterWebpackPlugin = require('../.ivue/sw-register-webpack-plugin');
+const { copyWorkboxLibraries } = require('workbox-build');
+
 const env = require('../config/prod.env');
 
 const webpackConfig = merge(baseWebpackConfig, {
@@ -88,9 +90,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         }
     },
     plugins: [
-        new CleanWebpackPlugin(),
-        // 清理 /dist 文件夹
-        // new CleanWebpackPlugin(),
         // short-circuits all Vue.js warning code
         new webpack.DefinePlugin({
             'process.env': env,
@@ -98,8 +97,8 @@ const webpackConfig = merge(baseWebpackConfig, {
 
         // 将css提取到自己的文件中
         new MiniCssExtractPlugin({
-            filename: utils.assetsPath('css/[name].[contenthash].css')
-            // allChunks: true
+            filename: utils.assetsPath('css/[name].[contenthash].css'),
+            allChunks: true
         }),
 
         // inject skeleton content(DOM & CSS) into HTML
@@ -145,22 +144,17 @@ const webpackConfig = merge(baseWebpackConfig, {
             favicon: path.join(__dirname, '../src/assets/logo.png')
         }),
 
-        // keep module.id stable when vendor modules does not change
-        // new webpack.HashedModuleIdsPlugin(),
-        // enable scope hoisting
-        // new webpack.optimize.ModuleConcatenationPlugin(),
-
         // 复制自定义静态资产
-        new CopyWebpackPlugin([
-            {
-                from: path.resolve(__dirname, '../static'),
-                // 输出root如果 from 是file或dir，则解析的glob路径如果 from 是glob。
-                // static
-                to: config.build.assetsSubDirectory,
-                // 要忽略这种模式的Globs。
-                ignore: ['.*']
-            }
-        ])
+        // new CopyWebpackPlugin([
+        //     {
+        //         from: path.resolve(__dirname, '../static'),
+        //         // 输出root如果 from 是file或dir，则解析的glob路径如果 from 是glob。
+        //         // static
+        //         to: config.build.assetsSubDirectory,
+        //         // 要忽略这种模式的Globs。
+        //         ignore: ['.*']
+        //     }
+        // ])
     ]
 });
 
@@ -194,6 +188,41 @@ if (config.build.productionGzip) {
 if (config.build.bundleAnalyzerReport) {
     const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
     webpackConfig.plugins.push(new BundleAnalyzerPlugin());
+}
+
+// serviceWorker 配置
+const serviceWorker = config.serviceWorker;
+
+if (serviceWorker && serviceWorker.enable !== false) {
+    // Use workbox@3.x in prod mode.
+    useWorkbox(webpackConfig, config);
+
+    // 在useWorkbox之后，serviceWorker.enable可能会更改
+    if (serviceWorker.enable !== false) {
+        async function _copyWorkboxLibraries () {
+            webpackConfig.plugins.push(new CopyWebpackPlugin([
+                {
+                    from: path.resolve(__dirname, '../static'),
+                    // 输出root如果 from 是file或dir，则解析的glob路径如果 from 是glob。
+                    // static
+                    to: config.build.assetsSubDirectory,
+                    // 要忽略这种模式的Globs。
+                    ignore: ['.*']
+                }
+            ]))
+
+            copyWorkboxLibraries('dist/');
+
+            // 将服务工作者的注册码注入HTML
+            webpackConfig.plugins.push(new SWRegisterWebpackPlugin({
+                filePath: path.resolve(__dirname, '../.ivue/sw-register.js'),
+                prefix: (serviceWorker && serviceWorker.swPath) || config.build.assetsPublicPath
+            }));
+        }
+
+        _copyWorkboxLibraries();
+    }
+
 }
 
 module.exports = webpackConfig;
