@@ -141,7 +141,8 @@ const webpackConfig = merge(baseWebpackConfig, {
                 // https://github.com/kangax/html-minifier#options-quick-reference
             },
             // 允许控制在将块包含到HTML之前应如何对块进行排序
-            chunksSortMode: 'dependency'
+            chunksSortMode: 'dependency',
+            favicon: path.join(__dirname, '../src/assets/logo.png')
         }),
 
         // keep module.id stable when vendor modules does not change
