@@ -8,10 +8,6 @@ const config = require('../config');
 const utils = require('./utils');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const nodeSassMagicImporter = require('node-sass-magic-importer');
-// 测量你的webpack构建速度
-const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
-
-const smp = new SpeedMeasurePlugin();
 
 const env = process.env.NODE_ENV;
 const sourceMap = env === 'development';
@@ -130,4 +126,4 @@ const webpackConfig = {
     }
 }
 
-module.exports = smp.wrap(webpackConfig);
+module.exports = webpackConfig;

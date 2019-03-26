@@ -8,13 +8,6 @@
         ]
     ],
     "plugins": [
-        "@babel/plugin-syntax-dynamic-import",
-        [
-            "import",
-            {
-                "libraryName": "ivue-material",
-                "libraryDirectory": "src/components"
-            }
-        ]
+        "@babel/plugin-syntax-dynamic-import"
     ]
 }
