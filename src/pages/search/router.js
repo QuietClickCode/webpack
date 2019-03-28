@@ -2,7 +2,7 @@
  * @file home router
  */
 
-import Search from '@/pages/Search/Search.vue';
+import Search from '@/pages/search/Search.vue';
 
 export default {
     routes: [

@@ -23,6 +23,7 @@ module.exports = {
         notifyOnErrors: true,
         poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
+        // devtool: 'cheap-module-eval-source-map',
         devtool: 'cheap-module-eval-source-map',
 
         // CSS Sourcemaps off by default because relative paths are "buggy"
@@ -42,6 +43,7 @@ module.exports = {
         index: path.resolve(__dirname, '../dist/index.html'),
         // 这应该指向包含应用程序的所有静态资产的根目录
         assetsRoot: path.resolve(__dirname, '../dist'),
+
         // 将webpack生成的资源嵌入此目录中build.assetsRoot
         assetsSubDirectory: 'static',
         // 这应该是build.assetsRoot通过HTTP提供服务的URL路径

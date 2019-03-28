@@ -21,6 +21,8 @@
         "cross-env": "^5.2.0",
         "babel-plugin-import": "^1.11.0",
         "chalk": "^2.4.2",
+        "semver": "^6.0.0",
+        "shelljs": "^0.8.3",
         "clean-webpack-plugin": "^2.0.1",
         "compression-webpack-plugin": "^2.0.0",
         "connect-history-api-fallback": "^1.6.0",
@@ -53,6 +55,10 @@
         "webpack-dev-middleware": "^3.6.1",
         "webpack-hot-middleware": "^2.24.3",
         "webpack-merge": "^4.2.1"
+    },
+    "engines": {
+        "node": ">= 4.0.0",
+        "npm": ">= 2.0.0"
     },
     "browserslist": [
         "> 1%",

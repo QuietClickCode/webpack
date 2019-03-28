@@ -1,14 +1,14 @@
 
 import Vue from 'vue'
 import App from './App.vue'
-// import { IvueButton } from 'ivue-material';
+import { IvueButton } from 'ivue-material';
 
 // 创建路由
 import { createRouter } from './router.js';
 
-// Vue.component('IvueButton', IvueButton);
+Vue.component('IvueButton', IvueButton);
 Vue.config.productionTip = false
-// import 'ivue-material/dist/styles/ivue.css';
+import 'ivue-material/dist/styles/ivue.css';
 
 
 export function createApp (routerParams) {

@@ -6,6 +6,8 @@
 
 'use strict';
 
+require('./check-versions')();
+
 process.env.NODE_ENV = 'production';
 
 // 以包的形式包装rm -rf命令，用来删除文件和文件夹的，不管文件夹是否为空，都可删除

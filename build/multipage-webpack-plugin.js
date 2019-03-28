@@ -77,48 +77,48 @@ class MultipageWebpackPlugin {
       );
     });
 
-    if (webpack.version > "4.0.0") {
-      compiler.optimization = {
-        splitChunks: {
-          chunks: "async", // initial、async和all
-          name: true,
-          // minSize: 30000,   // 形成一个新代码块最小的体积
-          // maxAsyncRequests: 5,   // 按需加载时候最大的并行请求数
-          // maxInitialRequests: 3,   // 最大初始化请求数
-          // automaticNameDelimiter: '~',   // 打包分割符
-          cacheGroups: {
-            common: {
-              name: "common",
-              chunks: "initial",
-              minChunks: 2
-            },
-            vendors: {
-              name: "vendors",
-              chunks: "all",
-              test: /[\\/]node_modules[\\/]/
-            }
-          }
-        }
-      };
-    } else {
-      compiler.apply(
-        new webpack.optimize.CommonsChunkPlugin({
-          name: "shared",
-          minChunks: entriesToCreateTemplatesFor.length || 3,
-          chunks: Object.keys(webpackConfigOptions.entry)
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-          name: "vendor",
-          minChunks: Infinity,
-          chunks: ["vendor"]
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-          name: "inline",
-          filename: this.bootstrapFilename,
-          minChunks: Infinity
-        })
-      );
-    }
+    // if (webpack.version > "4.0.0") {
+    //   compiler.optimization = {
+    //     splitChunks: {
+    //       chunks: "async", // initial、async和all
+    //       name: true,
+    //       // minSize: 30000,   // 形成一个新代码块最小的体积
+    //       // maxAsyncRequests: 5,   // 按需加载时候最大的并行请求数
+    //       // maxInitialRequests: 3,   // 最大初始化请求数
+    //       // automaticNameDelimiter: '~',   // 打包分割符
+    //       cacheGroups: {
+    //         common: {
+    //           name: "common",
+    //           chunks: "initial",
+    //           minChunks: 2
+    //         },
+    //         vendors: {
+    //           name: "vendors",
+    //           chunks: "all",
+    //           test: /[\\/]node_modules[\\/]/
+    //         }
+    //       }
+    //     }
+    //   };
+    // } else {
+    //   compiler.apply(
+    //     new webpack.optimize.CommonsChunkPlugin({
+    //       name: "shared",
+    //       minChunks: entriesToCreateTemplatesFor.length || 3,
+    //       chunks: Object.keys(webpackConfigOptions.entry)
+    //     }),
+    //     new webpack.optimize.CommonsChunkPlugin({
+    //       name: "vendor",
+    //       minChunks: Infinity,
+    //       chunks: ["vendor"]
+    //     }),
+    //     new webpack.optimize.CommonsChunkPlugin({
+    //       name: "inline",
+    //       filename: this.bootstrapFilename,
+    //       minChunks: Infinity
+    //     })
+    //   );
+    // }
   }
 }
 module.exports = MultipageWebpackPlugin;

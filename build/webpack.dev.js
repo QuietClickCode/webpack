@@ -26,7 +26,7 @@ Object.keys(webpackConfig.entry).forEach(function (name) {
     webpackConfig.entry[name] = ['./build/dev-client'].concat(webpackConfig.entry[name]);
 });
 
-const webpackDev = merge(webpackConfig, {
+module.exports = merge(webpackConfig, {
     mode: "development",
     // cheap-module-eval-source-map 开发速度更快
     devtool: config.dev.devtool,
@@ -49,6 +49,7 @@ const webpackDev = merge(webpackConfig, {
             filename: utils.assetsPath('css/[name].css')
         }),
 
+        new webpack.optimize.OccurrenceOrderPlugin(),
         // 热重新加载模块
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
         new webpack.HotModuleReplacementPlugin(),
@@ -77,21 +78,3 @@ const webpackDev = merge(webpackConfig, {
         ])
     ]
 });
-
-
-// const routers = utils.getEntries('./src/pages', 'entry.js');
-// console.log(routers)
-// for (let key in routers) {
-//     console.log(key);
-//     webpackDev.plugins.push(
-//         new HtmlWebpackPlugin({
-//             filename: `${key}.html`,
-//             template: resolve(`src/pages/${key}/index.html`),
-//             // 所有javascript资源将被放置在body元素的底部。
-//             // 'head'将脚本放在head元素中
-//             inject: true
-//         }),
-//     )
-// }
-
-module.exports = webpackDev;
