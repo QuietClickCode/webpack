@@ -17,7 +17,7 @@ module.exports = {
         // 各种Dev Server设置
         host: 'localhost',
         // 指定要侦听的开发服务器的端口
-        port: 8080,
+        port: 9000,
         autoOpenBrowser: false,
         errorOverlay: true,
         notifyOnErrors: true,

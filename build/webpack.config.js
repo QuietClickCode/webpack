@@ -12,7 +12,6 @@ const nodeSassMagicImporter = require('node-sass-magic-importer');
 const env = process.env.NODE_ENV;
 const sourceMap = env === 'development';
 
-
 // 别名路径
 function resolve (dir) {
     return path.join(__dirname, '..', dir);
@@ -20,9 +19,7 @@ function resolve (dir) {
 
 const webpackConfig = {
     context: path.resolve(__dirname, '../'),
-    entry: {
-        app: './src/main.js'
-    },
+    entry: utils.getEntries('./src/pages', 'entry.js'),
     output: {
         // 输出目录作为绝对路径。
         path: config.build.assetsRoot,
@@ -47,6 +44,13 @@ const webpackConfig = {
     },
     module: {
         rules: [
+            // 收集路线并注入
+            {
+                resource: resolve('src/router.js'),
+                loader: 'router-loader',
+                // 指定加载程序的类别。没有值意味着正常的加载器
+                enforce: 'pre'
+            },
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
@@ -57,7 +61,8 @@ const webpackConfig = {
                         img: 'src',
                         image: 'xlink:href'
                     }
-                }
+                },
+                include: [resolve('src')]
             },
             {
                 test: /\.js$/,
@@ -123,6 +128,12 @@ const webpackConfig = {
         net: 'empty',
         tls: 'empty',
         child_process: 'empty'
+    },
+    // 解析webpack的加载程序包
+    resolveLoader: {
+        alias: {
+            'router-loader': path.join(__dirname, './loaders/router-loader')
+        }
     }
 }
 

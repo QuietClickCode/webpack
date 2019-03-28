@@ -5,6 +5,7 @@
 
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const fs = require('fs');
 
 const config = require('../config');
 
@@ -96,4 +97,29 @@ exports.styleLoaders = function (options) {
     }
 
     return output;
+}
+
+/**
+ * 在pageDir中寻找各个页面入口
+ *
+ * pageDir 路径
+ * entryPath 文件名
+ */
+exports.getEntries = function (pageDir, entryPath) {
+    const entry = {};
+    const pageDirPath = path.join(__dirname, '..', pageDir);
+
+    // 读取文件
+    fs.readdirSync(pageDirPath)
+        // 发现文件夹，就认为是页面模板
+        .filter((f) => {
+            // 如果 fs.Stats 对象描述文件系统目录，则返回 true
+            return fs.statSync(path.join(pageDirPath, f)).isDirectory();
+        })
+        .forEach((f) => {
+            // basename 方法返回 path 的最后一部分，类似于 Unix 的 basename 命令。 尾部的目录分隔符将被忽略
+            entry[path.basename(f)] = [pageDir, f, entryPath].join('/');
+        });
+
+    return entry;
 }

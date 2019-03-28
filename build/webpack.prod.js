@@ -11,9 +11,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
+const MultipageWebpackPlugin = require('./multipage-webpack-plugin');
+
 // 清理dist文件
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const env = require('../config/prod.env');
+// 别名路径
+function resolve (dir) {
+    return path.join(__dirname, '..', dir);
+}
 
 const webpackConfig = merge(baseWebpackConfig, {
     mode: "production",
@@ -107,32 +113,21 @@ const webpackConfig = merge(baseWebpackConfig, {
                 : { safe: true }
         }),
 
-
-        // 使用正确的资产哈希生成dist index.html以进行缓存。
-        // 您可以通过编辑/index.html来自定义输出
-        // 请参阅https://github.com/ampedandwired/html-webpack-plugin
-        new HtmlWebpackPlugin({
-            // path.resolve(__dirname, '../dist/index.html')
-            filename: config.build.index,
-            // webpack需要模板的路径
-            template: 'public/index.html',
-            // 将所有资产注入给定template或templateContent。
-            // 传递true或'body'所有javascript资源将被放置在body元素的底部。
-            // 'head'将脚本放在head元素中
-            inject: true,
-            // 将html-minifier的选项作为对象来缩小输出
-            minify: {
-                // Strip HTML comments
-                removeComments: true,
-                // Collapse white space that contributes to text nodes in a document tree
-                collapseWhitespace: true,
-                // Remove quotes around attributes when possible
-                removeAttributeQuotes: true
-                // more options:
-                // https://github.com/kangax/html-minifier#options-quick-reference
-            },
-            // 允许控制在将块包含到HTML之前应如何对块进行排序
-            chunksSortMode: 'dependency'
+        // 多页配置
+        new MultipageWebpackPlugin({
+            bootstrapFilename: utils.assetsPath('js/manifest.[chunkhash].js'),
+            templateFilename: '[name].html',
+            templatePath: config.build.assetsRoot,
+            htmlTemplatePath: resolve('src/pages/[name]/index.html'),
+            htmlWebpackPluginOptions: {
+                inject: true,
+                minify: {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    removeAttributeQuotes: true
+                },
+                chunksSortMode: 'auto'
+            }
         }),
 
         // keep module.id stable when vendor modules does not change

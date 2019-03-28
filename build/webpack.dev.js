@@ -7,21 +7,26 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 识别某些类别的webpack错误，并清理，聚合和优先级，以提供更好的开发人员体验。
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const MultipageWebpackPlugin = require('./multipage-webpack-plugin');
 
 const utils = require('./utils');
 const config = require('../config');
 const webpackConfig = require('./webpack.config');
+
+// 别名路径
+function resolve (dir) {
+    return path.join(__dirname, '..', dir);
+}
 
 // 将热重新加载相关代码添加到条目块
 Object.keys(webpackConfig.entry).forEach(function (name) {
     webpackConfig.entry[name] = ['./build/dev-client'].concat(webpackConfig.entry[name]);
 });
 
-module.exports = merge(webpackConfig, {
+const webpackDev = merge(webpackConfig, {
     mode: "development",
     // cheap-module-eval-source-map 开发速度更快
     devtool: config.dev.devtool,
@@ -49,25 +54,44 @@ module.exports = merge(webpackConfig, {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
 
-        // 简化HTML文件的创建
-        // https://github.com/ampedandwired/html-webpack-plugin
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'public/index.html',
-            // 所有javascript资源将被放置在body元素的底部。
-            // 'head'将脚本放在head元素中
-            inject: true
+        // 多页配置
+        new MultipageWebpackPlugin({
+            bootstrapFilename: 'manifest',
+            templateFilename: 'index.html',
+            templatePath: '[name]',
+            htmlTemplatePath: resolve('src/pages/[name]/index.html'),
+            htmlWebpackPluginOptions: {
+                inject: true
+            }
         }),
 
         new FriendlyErrorsPlugin(),
 
         // copy custom static assets
         new CopyWebpackPlugin([
-        {
-          from: path.resolve(__dirname, '../static'),
-          to: config.dev.assetsSubDirectory,
-          ignore: ['.*']
-        }
-      ])
+            {
+                from: path.resolve(__dirname, '../static'),
+                to: config.dev.assetsSubDirectory,
+                ignore: ['.*']
+            }
+        ])
     ]
 });
+
+
+// const routers = utils.getEntries('./src/pages', 'entry.js');
+// console.log(routers)
+// for (let key in routers) {
+//     console.log(key);
+//     webpackDev.plugins.push(
+//         new HtmlWebpackPlugin({
+//             filename: `${key}.html`,
+//             template: resolve(`src/pages/${key}/index.html`),
+//             // 所有javascript资源将被放置在body元素的底部。
+//             // 'head'将脚本放在head元素中
+//             inject: true
+//         }),
+//     )
+// }
+
+module.exports = webpackDev;
