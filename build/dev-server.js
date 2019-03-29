@@ -13,9 +13,11 @@ if (!process.env.NODE_ENV) {
 }
 
 const opn = require('opn');
-const path  = require('path');
+const path = require('path');
 const webpack = require('webpack');
 const express = require('express');
+const utils = require('./utils');
+
 // 轻松的配置代理服务器中间件
 const proxyMiddleware = require('http-proxy-middleware');
 
@@ -71,8 +73,26 @@ Object.keys(proxyTable).forEach(function (context) {
     app.use(proxyMiddleware(options.filter || context, options))
 });
 
+// 处理HTML5 history API，映射例如/home路由到/home/index.html
+let rewrites = [];
+Object.keys(utils.getEntries('./src/pages', 'entry.js'))
+    .forEach(entry => {
+        rewrites.push({
+            from: new RegExp('/' + entry),
+            to: '/' + entry + '/index.html'
+        });
+        // 额外插入skeleton路由
+        rewrites.push({
+            from: new RegExp('/skeleton-' + entry),
+            to: '/' + entry + '/index.html'
+        });
+    });
+
 // 处理 history API 的回退情况（如果在线上环境中，也需要服务器做相应处理）
-app.use(require('connect-history-api-fallback')());
+app.use(require('connect-history-api-fallback')({
+    htmlAcceptHeaders: ['text/html'],
+    rewrites: rewrites
+}));
 
 // 服务器部署 webpack 打包的静态资源
 app.use(devMiddleware);
@@ -85,7 +105,7 @@ app.use(hotMiddleware);
 let staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory);
 app.use(staticPath, express.static('./static'));
 
-let url = 'http://localhost:' + port;
+let url = 'http://localhost:' + port + '/home';
 
 let newResolve;
 let readyPromise = new Promise(function (resolve) {

@@ -1,7 +1,9 @@
-// https://github.com/lavas-project/vue-skeleton-webpack-plugin
+/**
+ * @file 页面骨架
+ */
 
 import Vue from 'vue';
-import Skeleton from '@/pages/Skeleton';
+import Skeleton from './Home.skeleton.vue';
 
 export default new Vue({
     components: {

@@ -7,15 +7,19 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 识别某些类别的webpack错误，并清理，聚合和优先级，以提供更好的开发人员体验。
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin');
+const MultipageWebpackPlugin = require('./multipage-webpack-plugin');
 
 const utils = require('./utils');
 const config = require('../config');
 const webpackConfig = require('./webpack.config');
 
+// 别名路径
+function resolve (dir) {
+    return path.join(__dirname, '..', dir);
+}
 
 // 将热重新加载相关代码添加到条目块
 Object.keys(webpackConfig.entry).forEach(function (name) {
@@ -32,7 +36,13 @@ module.exports = merge(webpackConfig, {
             extract: true,
             sourceMap: config.dev.cssSourceMap,
             usePostCSS: true
-        })
+        }).concat(SkeletonWebpackPlugin.loader({
+            resource: resolve('src/router.js'),
+            options: {
+                entry: Object.keys(utils.getEntries('./src/pages')),
+                importTemplate: 'import [nameHash] from \'@/pages/[name]/[nameCap].skeleton.vue\';'
+            }
+        }))
     },
     plugins: [
         // 允许您创建可在配置全局常量的编译时间
@@ -57,15 +67,15 @@ module.exports = merge(webpackConfig, {
             quiet: true
         }),
 
-        // 简化HTML文件的创建
-        // https://github.com/ampedandwired/html-webpack-plugin
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'public/index.html',
-            // 所有javascript资源将被放置在body元素的底部。
-            // 'head'将脚本放在head元素中
-            inject: true,
-            favicon: path.join(__dirname, '../src/assets/logo.png')
+        // 多页面HTML文件的创建
+        new MultipageWebpackPlugin({
+            bootstrapFilename: 'manifest',
+            templateFilename: 'index.html',
+            templatePath: '[name]',
+            htmlTemplatePath: resolve('src/pages/[name]/index.html'),
+            htmlWebpackPluginOptions: {
+                inject: true
+            }
         }),
 
         // copy custom static assets
