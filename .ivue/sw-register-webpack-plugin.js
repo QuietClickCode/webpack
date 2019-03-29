@@ -1,6 +1,5 @@
 /**
  * @file serviceWorker register no-cache solution
- * @author mj(zoumiaojiang@gmail.com)
  */
 
 const etpl = require('etpl');

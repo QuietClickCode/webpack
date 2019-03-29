@@ -2,6 +2,7 @@
     <div class="hello">
         <img src="../../assets/logo.png">
         <h1 class="gray--text">IVue Home</h1>
+        {{_test}}
         <ul>
             <li>
                 <IvueButton href="https://github.com/qq282126990/ivue-ui">IVue Github</IvueButton>
@@ -14,8 +15,26 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
+
 export default {
     name: 'hello',
+    async asyncData () {
+        await new Promise((resolve, reject) => {
+            setTimeout(resolve, 500);
+        });
+    },
+    data () {
+        return {
+            _test: ''
+        }
+    },
+    computed: {
+        ...mapState('test', {
+            _test: 'test',
+        })
+    },
     data () {
         return {
             msg: 'Welcome to Your Vue.js App'
