@@ -6,8 +6,6 @@
 
 'use strict';
 
-require('./check-versions')();
-
 const chalk = require('chalk');
 // The semantic versioner for npm
 const semver = require('semver');
