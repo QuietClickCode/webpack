@@ -67,12 +67,7 @@ const webpackConfig = {
             {
                 test: /\.scss$/,
                 use: [
-                    {
-                        loader: 'style-loader',
-                        options: {
-                            sourceMap,
-                        },
-                    },
+                    process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
