@@ -76,10 +76,7 @@ const webpackConfig = {
             {
                 test: /\.scss$/,
                 use: [
-                    // {
-                    //     loader: "style-loader"
-                    // },
-                    MiniCssExtractPlugin.loader,
+                    process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
