@@ -73,6 +73,12 @@ const webpackConfig = {
                 test: /\.scss$/,
                 use: [
                     {
+                        loader: 'style-loader',
+                        options: {
+                            sourceMap,
+                        },
+                    },
+                    {
                         loader: 'css-loader',
                         options: {
                             sourceMap,
