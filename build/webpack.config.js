@@ -65,6 +65,44 @@ const webpackConfig = {
                 include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
             },
             {
+                test: /\.(styl|stylus)$/,
+                use: [
+                    process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap,
+                        },
+                    },
+                    {
+                        loader: 'stylus-loader',
+                        options: {
+                            sourceMap,
+                            paths: [path.resolve(__dirname, 'node_modules')],
+                        },
+                    },
+                ],
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap,
+                        },
+                    },
+                    {
+                        loader: 'less-loader',
+                        options: {
+                            sourceMap,
+                            paths: [path.resolve(__dirname, 'node_modules')],
+                        },
+                    },
+                ],
+            },
+            {
                 test: /\.scss$/,
                 use: [
                     process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
