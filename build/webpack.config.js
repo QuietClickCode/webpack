@@ -8,6 +8,7 @@ const config = require('../config');
 const utils = require('./utils');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const nodeSassMagicImporter = require('node-sass-magic-importer');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const env = process.env.NODE_ENV;
 const sourceMap = env === 'development';
